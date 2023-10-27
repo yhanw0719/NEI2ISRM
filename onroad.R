@@ -2,22 +2,7 @@
 # This script spatially allocate NEI 2017 onroad emissions to ISRM grid cells
 ################################################################################
 
-## clean up and initialize
-#rm(list=ls())
-#setwd('G:/Shared drives/CMAQ_Adjoint/Yuhan/Fall_2022/Task4_NEI/Deliverable/script')
-#source('initialization.R')
-#inputdir = '../rawdata/'
-#outputdir = '../product/'
-#xwalkdir = '../xwalk/'
-#surdir = '../surrogate/'
-
 ## load input data
-print('----- inputdir below -----')
-print(inputdir)
-print('----- work dir below -----')
-print(getwd())
-print('----- list files below -----')
-print(list.files(path=inputdir))
 load(file.path(inputdir,'isrm.RData'))
 load(file.path(inputdir,'counties.RData'))
 load(file.path(inputdir,'onroad/2017gb_nata_onroad_SMOKE_MOVES_NATAstyle_14may2020_v0.RData'))
