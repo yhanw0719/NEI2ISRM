@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 rm(list=ls())
-source(file.path(codedir,'initialization.R'))
+source('/opt/gitrepo/NEI2ISRM/initialization.R')
 
 
 ##############################################
