@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 rm(list=ls())
-source('./initialization.R')
+source(file.path(codedir,'initialization.R'))
 
 
 ##############################################
@@ -15,15 +15,17 @@ if(useparser){
 
   # parse command-line options
   option_list <- list(
-    make_option(c("--inputdir"),  dest="inputdir",  action="store", help="NEI 2017 data path", default="./rawdata/" ),
-    make_option(c("--outputdir"),  dest="outputdir",  action="store", help="output data path", default="./product/" ),
-    make_option(c("--xwalkdir"),  dest="xwalkdir",  action="store", help="scc-surrogate xwalk data path", default="./xwalk/"),
-    make_option(c("--surdir"),  dest="surdir",  action="store", help="surrogate data path", default="./surrogate/" ),
+    make_option(c("--codedir"),  dest="codedir",  action="store", help="code repo", default="/opt/gitrepo/NEI2ISRM/" ),
+    make_option(c("--inputdir"),  dest="inputdir",  action="store", help="NEI 2017 data path", default="/rawdata/" ),
+    make_option(c("--outputdir"),  dest="outputdir",  action="store", help="output data path", default="/product/" ),
+    make_option(c("--xwalkdir"),  dest="xwalkdir",  action="store", help="scc-surrogate xwalk data path", default="/xwalk/"),
+    make_option(c("--surdir"),  dest="surdir",  action="store", help="surrogate data path", default="/surrogate/" ),
     make_option(c("--sector"),  dest="sector",  action="store", help="emission sector", default="onroad" )
   )
   opt <- parse_args(OptionParser(option_list=option_list))
   
   # read out the global variables so that subsequent programs can all use them
+  codedir = opt$codedir
   inputdir = opt$inputdir
   outputdir = opt$outputdir
   xwalkdir = opt$xwalkdir
@@ -42,7 +44,7 @@ if(useparser){
 ######################################################
 # call related script to spatially allocate NEI 2017 
 ######################################################
-source(paste0('./',sector,'.R'))
+source(file.path(codedir, paste0(sector,'.R')))
 
 print('---------------')
 print('Done! Output written to:')
