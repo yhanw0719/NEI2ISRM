@@ -12,8 +12,11 @@
 #surdir = '../surrogate/'
 
 ## load input data
+print('----- inputdir below -----')
 print(inputdir)
+print('----- work dir below -----')
 print(getwd())
+print('----- list files below -----')
 print(list.files(path=inputdir))
 load(file.path(inputdir,'isrm.RData'))
 load(file.path(inputdir,'counties.RData'))
