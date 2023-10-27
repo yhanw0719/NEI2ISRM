@@ -29,6 +29,10 @@ RUN echo ''  ;\
     export TERM=dumb  ;\
     cd /     ;\
     mkdir -p /opt/gitrepo/NEI2ISRM ;\
+    mkdir -p /rawdata ;\
+    mkdir -p /product ;\
+    mkdir -p /surrogate ;\
+    mkdir -p /xwalk ;\
     pwd      ;\
     Rscript --quiet --no-readline --slave -e 'install.packages("optparse",     repos = "http://cran.us.r-project.org")'    ;\
     echo ""
