@@ -33,11 +33,11 @@ if(useparser){
   sector = opt$sector
 
   # print for users to confirm
-  print(paste0（"inputdir: ", inputdir))
-  print(paste0（"outputdir: ", outputdir))
-  print(paste0（"xwalkdir: ", xwalkdir))
-  print(paste0（"surdir: ", surdir))
-  print(paste0（"sector: ", sector))
+  print(paste0("inputdir: ", inputdir))
+  print(paste0("outputdir: ", outputdir))
+  print(paste0("xwalkdir: ", xwalkdir))
+  print(paste0("surdir: ", surdir))
+  print(paste0("sector: ", sector))
 }
 
 
