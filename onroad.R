@@ -12,6 +12,9 @@
 #surdir = '../surrogate/'
 
 ## load input data
+print(inputdir)
+print(getwd())
+print(list.files(path=inputdir))
 load(file.path(inputdir,'isrm.RData'))
 load(file.path(inputdir,'counties.RData'))
 load(file.path(inputdir,'onroad/2017gb_nata_onroad_SMOKE_MOVES_NATAstyle_14may2020_v0.RData'))
