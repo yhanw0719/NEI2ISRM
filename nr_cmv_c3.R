@@ -6,6 +6,7 @@
 load(file.path(inputdir,'isrm.RData'))
 load(file.path(inputdir,'counties.RData'))
 xwalk = read.csv(file.path(xwalkdir,'xwalk_nr_cmv_c3.csv'))
+sf::sf_use_s2(FALSE)
 
 ## read raw data and format
 raw1 = read.csv(file.path(inputdir,'nonroad/nr_cmv_c3/c3_offshore_2017NEI_NONPOINT_20200415_15apr2020_v0.csv'),
@@ -89,6 +90,49 @@ dat = dat %>% mutate(Sector='nr_cmv_c3',
       rename('SCC'='scc','ISRM'='isrm',
              'PM25'='PM25-PRI','SOx'='SO2','NOx'='NOX') %>%
       dplyr::select(Sector, SCC, ISRM, VOC, NOx, NH3, SOx, PM25, Height, Diam, Temp, Velocity) 
+
+## Update: use 12km AIS inventory to replace NEI for underway emissions
+useAIS = TRUE
+if (useAIS){
+  ## keep NEI in-port portion
+  dat = filter(dat, SCC %in% c(2280002103, 2280002104, 2280003103, 2280003104)) ## keep NEI port emissions
+  
+  ## read AIS underway portion
+  raw = read.csv(file.path(inputdir,'nonroad/nr_cmv_c3/cmv_c3_2017adjust_20200422_12US1_2017_US_annual_25apr2020_v0.csv'),
+                 skip=6) %>%
+        dplyr::filter(poll %in% c('VOC','NOX','NH3','SO2','PM2_5'),
+                      scc %in% c(2280002203, 2280002204, 2280003203, 2280003204)) %>%
+        dplyr::select(scc, poll, ann_value, longitude, latitude)
+  
+  ## assign US121 geometry to AIS underway entry lat/lon
+  load(file.path(inputdir,'nonroad/grids_12US1.RData'))
+  grids = st_transform(grids, crs=4326)
+  raw = sf::st_as_sf(raw, coords = c('longitude','latitude'))
+  st_crs(raw) = "+proj=longlat +ellps=WGS84 +datum=WGS84"
+  raw = sf::st_join(raw, grids, join = st_within) %>% st_drop_geometry()
+  raw = merge(grids, raw, by=c('id','west_east','south_north'))
+  raw$grid_area = units::drop_units(st_area(raw$geometry))
+  
+  ## partition 12km AIS underway to ISRM grid cells
+  tmp = st_intersection(raw, isrm)
+  tmp$area = units::drop_units(st_area(tmp$geometry)) 
+  tmp = st_drop_geometry(tmp) %>%
+        mutate(ann_value = ann_value * area / grid_area) %>%
+        group_by(scc, isrm, poll) %>%
+        summarise(ann_value = sum(ann_value)) %>%
+        reshape2::dcast(scc + isrm ~ poll, value.var = 'ann_value')
+  for (pollutant in c('VOC','NOX','NH3','SO2','PM2_5')) {
+    if (!(pollutant %in% colnames(tmp))) {tmp[[pollutant]] = 0}
+  }
+  tmp = tmp %>% mutate(Sector='nr_cmv_c1c2',  
+                       Height=0, Diam=0, Temp=0, Velocity=0) %>%
+        rename('SCC'='scc','ISRM'='isrm',
+               'PM25'='PM2_5','SOx'='SO2','NOx'='NOX') %>%
+        dplyr::select(Sector, SCC, ISRM, VOC, NOx, NH3, SOx, PM25, Height, Diam, Temp, Velocity) 
+  
+  ## append to NEI in-port portion
+  dat = rbind(dat, tmp)
+}
 
 ## save output
 save(dat, file=file.path(outputdir,'nr_cmv_c3.RData'))
